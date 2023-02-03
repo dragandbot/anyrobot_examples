@@ -1,13 +1,10 @@
 #!/usr/bin/python3
 
-# This example shows how to read periodically the joint angles and the joint position of the robot.
+# This example shows how to read periodically the joint angles and the position of the robot.
 # Use Ctrl+C to stop the program 
 
-# dnb_tool_frame --> includes robot tool in drag&bot
-# tool_frame --> tool configured directly in robot controller, usually flange.
-
 import websocket # websocket-client https://github.com/websocket-client/websocket-client
-import json      # default support python
+import json      # default supported by python
 
 # Each message which is received through the WebSocket is processed in this function
 def on_message(ws, message):
