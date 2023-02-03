@@ -44,6 +44,12 @@ This example moves the robot up and down one time while printing its joints in a
 
 This example reads value of digital output number one, sets its value to the opposite one, and read it the value again.
 
+Expected trace:
+
+python3 example_ios.py 
+Digital Output original value: False
+Digital Output current value: True
+
 # Documentation for websocket in python
 
 https://github.com/websocket-client/websocket-client
