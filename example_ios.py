@@ -4,11 +4,13 @@
 
 # This example shows how to get and set digital IOs
 # Digital Output will be read, then set the inverted value and then read again
-# Use Ctrl+C to stop the program 
+# Use Ctrl+C to stop the program
 
 import websocket # websocket-client https://github.com/websocket-client/websocket-client
 import json      # default supported by python
 import uuid      # for generating unique ids in a easy way, part of the inbuilt python packages
+
+MAC_AUTH = # SET MAC STRING HERE (see: https://wiki.ros.org/rosauth)
 
 if __name__ == "__main__":
     connection_ip = "127.0.0.1" # Loopback localhost address, assuming running in same computer
@@ -18,13 +20,26 @@ if __name__ == "__main__":
     # Synchronous connection for this example
     ws = websocket.create_connection(connection_uri, timeout=1)
 
+    # Auth service call needs to be set directly on the first request after established connection
+    auth_service = {
+        "op": "auth",
+        "client": "my-client",
+        "dest": "ros",
+        "end": 0,
+        "level": "admin",
+        "mac": MAC_AUTH,
+        "rand": "rand",
+        "t": 0
+    }
+    ws.send(json.dumps(auth_service))
+
     # Get one digital IO
     # / at the beginning of a service id is optional
     # As example in this case we ignore id
     get_request = {
         "op": "call_service",
         "service": "/robot/get_digital_ios",
-        "args": { "ios": 
+        "args": { "ios":
                     [
                         {
                             "group_id": "DO",
@@ -40,7 +55,7 @@ if __name__ == "__main__":
 
     io_value = bool(response["values"]["ios"][0]["value"]) # Parse field as boolean
     print("Digital Output original value: " + str(io_value))
-    
+
     new_io_value = not io_value # Invert the value
 
     # In this request, as example, we write one id to show how it works
@@ -49,7 +64,7 @@ if __name__ == "__main__":
     set_request = {
         "op": "call_service",
         "service": "/robot/set_digital_ios",
-        "args": { "ios": 
+        "args": { "ios":
                     [
                         {   "id":
                                 {
@@ -79,4 +94,4 @@ if __name__ == "__main__":
     ws.close()
 
 
-    
+

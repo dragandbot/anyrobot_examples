@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # This example shows how to read periodically the joint angles and the position of the robot.
-# Use Ctrl+C to stop the program 
+# Use Ctrl+C to stop the program
 
 import websocket # websocket-client https://github.com/websocket-client/websocket-client
 import json      # default supported by python
@@ -26,15 +26,29 @@ def on_close(ws, close_status_code, close_msg):
 
 def on_open(ws):
     print("Opened connection to AnyRobot Interface")
+
+    # Auth service call needs to be set directly on the first request after established connection
+    auth_service = {
+        "op": "auth",
+        "client": "my-client",
+        "dest": "ros",
+        "end": 0,
+        "level": "admin",
+        "mac": MAC_AUTH,
+        "rand": "rand",
+        "t": 0
+    }
+    ws.send(json.dumps(auth_service))
+
     # Activate subscription to joint_states topic for getting the joint values
     msg_subscribe_joint_command = {
         "op": "subscribe",
-        "topic": "/joint_states"}	
+        "topic": "/joint_states"}
     ws.send(json.dumps(msg_subscribe_joint_command)) # Send command to AnyRobot Interface
     # Activate subscription to get robot pose
     msg_subscribe_joint_command = {
         "op": "subscribe",
-        "topic": "/tool_frame"}	
+        "topic": "/tool_frame"}
     ws.send(json.dumps(msg_subscribe_joint_command)) # Send command to AnyRobot Interface
 
 if __name__ == "__main__":
@@ -43,7 +57,7 @@ if __name__ == "__main__":
     connection_uri = "ws://" + connection_ip + ":" + str(connection_port)
 
     websocket.enableTrace(False)
-    ws = websocket.WebSocketApp(connection_uri, 
+    ws = websocket.WebSocketApp(connection_uri,
             on_open=on_open,
             on_message=on_message,
             on_error=on_error,
