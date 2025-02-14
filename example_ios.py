@@ -9,16 +9,28 @@
 import websocket # websocket-client https://github.com/websocket-client/websocket-client
 import json      # default supported by python
 import uuid      # for generating unique ids in a easy way, part of the inbuilt python packages
+import ssl
 
 MAC_AUTH = # SET MAC STRING HERE (see: https://wiki.ros.org/rosauth)
 
 if __name__ == "__main__":
-    connection_ip = "127.0.0.1" # Loopback localhost address, assuming running in same computer
-    connection_port = 9091
-    connection_uri = "ws://" + connection_ip + ":" + str(connection_port)
+    connection_ip = "192.168.100.100" # Loopback localhost address, assuming running in same computer
+    connection_port = 80              # If SSL is activated on the controller use port 443
+    connection_protocol = "ws://"     # If SSL is activated use protocol 'wss://'
+
+    connection_uri = connection_protocol + connection_ip + ":" + str(connection_port) + '/dnb-rosbridge'
+
+    ### NO SSL ###
+    ws = websocket.create_connection(connection_uri, timeout=10)
+
+    ### SSL activated ########
+    # Uncomment the following code if you are using a self signed certificate on the controller
+    # **NOT RECOMMENDED FOR PRODUCTION USAGE.** sslopt dict disables certificate verification.
+    #ssl_options = {"cert_reqs": ssl.CERT_NONE}
 
     # Synchronous connection for this example
-    ws = websocket.create_connection(connection_uri, timeout=1)
+    #ws = websocket.create_connection(connection_uri, sslopt=ssl_options, timeout=10)
+    ### End: SSL activated ###
 
     # Auth service call needs to be set directly on the first request after established connection
     auth_service = {
