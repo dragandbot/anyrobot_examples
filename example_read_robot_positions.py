@@ -52,9 +52,11 @@ def on_open(ws):
     ws.send(json.dumps(msg_subscribe_joint_command)) # Send command to AnyRobot Interface
 
 if __name__ == "__main__":
-    connection_ip = "127.0.0.1" # Loopback localhost address, assuming running in same computer
-    connection_port = 9091
-    connection_uri = "ws://" + connection_ip + ":" + str(connection_port)
+    connection_ip = "192.168.100.100" # Loopback localhost address, assuming running in same computer
+    connection_port = 80              # If SSL is activated on the controller use port 443
+    connection_protocol = "ws://"     # If SSL is activated use protocol 'wss://'
+
+    connection_uri = connection_protocol + connection_ip + ":" + str(connection_port) + '/dnb-rosbridge'
 
     websocket.enableTrace(False)
     ws = websocket.WebSocketApp(connection_uri,
@@ -63,4 +65,14 @@ if __name__ == "__main__":
             on_error=on_error,
             on_close=on_close)
 
+    ### NO SSL ###
     ws.run_forever()
+
+    ### SSL activated ########
+    # Uncomment the following code if you are using a self signed certificate on the controller
+    # **NOT RECOMMENDED FOR PRODUCTION USAGE.** sslopt dict disables certificate verification.
+    #ssl_options = {"cert_reqs": ssl.CERT_NONE}
+
+    # Synchronous connection for this example
+    #ws.run_forever(sslopt=ssl_options)
+    ### End: SSL activated ###
